@@ -1,61 +1,33 @@
 #!/usr/bin/python3
-from random import randint
+"""Module that factorize as many numbers as possible
+ into a product of two smaller numbers."""
+from sys import argv
 
 
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+def factorize(value):
+    """"print a simple descomposition of an integer > 1"""
+    i = 2
 
+    if value < 2:
+        return
+    print()
+    print(value, "<- value-bef")
+    while value % i:
+        i += 1
+    print("{:.0f}={:.0f}*{:.0f}".format(value, value / i, i))
+    print(value, "<- value-aft")
+    print()
 
-def _pollard_brent(c, n, x):
-    y = (x ** 2) % n + c
-    if y >= n:
-        y -= n
+if len(argv) != 2:
+    exit()
 
-    assert 0 <= y < n
-    return y
+try:
+    with open(argv[1]) as file:
+        line = file.readline()
 
-
-def factorise_b(n, iterations=None):
-    y, c, m = (randint(1, n - 1) for w in range(3))
-    r, q, g = 1, 1, 1
-    i = 0
-    while g == 1:
-        x = y
-        for w in range(r):
-            y = _pollard_brent(c, n, y)
-        k = 0
-        while k < r and g == 1:
-            ys = y
-            for _ in range(min(m, r - k)):
-                y = _pollard_brent(c, n, y)
-                q = (q * abs(x - y)) %  n
-            g = gcd(q, n)
-            k += m
-        r *= 2
-        if iterations:
-            i += 1
-            if i == iterations:
-                return None
-
-    if g == n:
-        while True:
-            ys = _pollard_brent(c, n, ys)
-            g = gcd(abs(x - ys), n)
-            if g > 1:
-                break
-    return g
-
-
-if __name__ == '__main__':
-    from sys import argv
-
-    if len(argv) != 2:
-        exit(1)
-
-    with open(argv[1], "r") as f:
-        for i in f:
-            n = int(i[:-1])
-            res = factorise_b(n)
-            print("{}={}*{}".format(n, n // res, res))
+        while line != "":
+            value = int(line.split('\n')[0])
+            factorize(value)
+            line = file.readline()
+except:
+    pass
